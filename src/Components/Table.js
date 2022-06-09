@@ -12,6 +12,7 @@ function Table() {
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
     getPlanets();
@@ -24,7 +25,7 @@ function Table() {
       (item) => item.name.toLowerCase().includes(name),
     );
 
-    const teste = filterByNumericValues.reduce((acc, crr) => acc.filter((item) => {
+    const arrayPlanet = filterByNumericValues.reduce((acc, crr) => acc.filter((item) => {
       switch (crr.comparison) {
       case 'maior que':
         return Number(item[crr.column]) > Number(crr.value);
@@ -37,9 +38,11 @@ function Table() {
       }
     }), filterPlanets);
 
-    console.log(teste);
+    setPlanetName(arrayPlanet);
 
-    setPlanetName(teste);
+    if (filterByNumericValues.length > 0) {
+      setIsDisabled(false);
+    }
   }, [name, filterByNumericValues]);
 
   const handlePlanet = ({ target }) => {
@@ -62,6 +65,24 @@ function Table() {
           value,
         },
       ],
+    });
+  };
+
+  const deleteFilter = (index) => {
+    const newArray = filterByNumericValues.filter(
+      ((_filter, indexFilter) => index !== indexFilter),
+    );
+
+    setDataFilter({
+      ...dataFilter,
+      filterByNumericValues: newArray,
+    });
+  };
+
+  const removeAllFilters = () => {
+    setDataFilter({
+      ...dataFilter,
+      filterByNumericValues: [],
     });
   };
 
@@ -111,13 +132,33 @@ function Table() {
       </button>
       <div>
         {
+          <button
+            data-testid="button-remove-filters"
+            type="button"
+            disabled={ isDisabled }
+            onClick={ removeAllFilters }
+          >
+            Remover todos os filtros
+          </button>
+        }
+
+        {
           filterByNumericValues.map((item, index) => (
             <p
               key={ index }
+              data-testid="filter"
             >
               {`${item.column} 
               ${item.comparison} 
               ${item.value}`}
+
+              <button
+                type="button"
+                id={ index }
+                onClick={ () => deleteFilter(index) }
+              >
+                Remover Filtro
+              </button>
             </p>
           ))
         }
