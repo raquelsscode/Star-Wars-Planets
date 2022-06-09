@@ -2,31 +2,67 @@ import React, { useContext, useEffect, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
 
 function Table() {
-  const { data, getPlanets,
-    planetName, setPlanetName } = useContext(PlanetsContext);
-  const [dataFilter, setDataFilter] = useState([]);
+  const { data, planetName, setPlanetName, getPlanets } = useContext(PlanetsContext);
+  const [dataFilter, setDataFilter] = useState({
+    filterByName: {
+      name: '',
+    },
+    filterByNumericValues: [],
+  });
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     getPlanets();
   }, []);
 
+  const { filterByNumericValues, filterByName: { name } } = dataFilter;
+
   useEffect(() => {
-    function FilterPlanetName(planet) {
-      const filterPlanets = data.filter(
-        (item) => item.name.toLowerCase().includes(planet.toLowerCase()),
-      );
-      setDataFilter(filterPlanets);
-    }
-    FilterPlanetName(planetName.filterByName.name);
-  }, [data, planetName.filterByName.name]);
+    const filterPlanets = data.filter(
+      (item) => item.name.toLowerCase().includes(name),
+    );
+
+    const teste = filterByNumericValues.reduce((acc, crr) => acc.filter((item) => {
+      switch (crr.comparison) {
+      case 'maior que':
+        return Number(item[crr.column]) > Number(crr.value);
+      case 'menor que':
+        return Number(item[crr.column]) < Number(crr.value);
+      case 'igual a':
+        return Number(item[crr.column]) === Number(crr.value);
+      default:
+        return true;
+      }
+    }), filterPlanets);
+
+    console.log(teste);
+
+    setPlanetName(teste);
+  }, [name, filterByNumericValues]);
 
   const handlePlanet = ({ target }) => {
-    setPlanetName(
-      { ...planetName,
+    setDataFilter(
+      { ...dataFilter,
         filterByName: {
-          name: target.value,
+          name: target.value.toLowerCase(),
         } },
     );
+  };
+
+  const handleNumberFilter = () => {
+    setDataFilter({
+      ...dataFilter,
+      filterByNumericValues: [
+        ...filterByNumericValues,
+        {
+          column,
+          comparison,
+          value,
+        },
+      ],
+    });
   };
 
   const title = ['Name', 'Rotation Period', 'Orbital Period', 'Diameter',
@@ -41,6 +77,51 @@ function Table() {
         onChange={ handlePlanet }
         data-testid="name-filter"
       />
+      <select
+        onChange={ ({ target }) => setColumn(target.value) }
+        data-testid="column-filter"
+      >
+        <option>population</option>
+        <option>orbital_period</option>
+        <option>diameter</option>
+        <option>rotation_period</option>
+        <option>surface_water</option>
+      </select>
+      <select
+        onChange={ ({ target }) => setComparison(target.value) }
+        data-testid="comparison-filter"
+      >
+        <option>maior que</option>
+        <option>menor que</option>
+        <option>igual a</option>
+      </select>
+      <input
+        type="number"
+        placeholder="Digite um valor"
+        value={ value }
+        onChange={ ({ target }) => setValue(Number(target.value)) }
+        data-testid="value-filter"
+      />
+      <button
+        type="button"
+        data-testid="button-filter"
+        onClick={ handleNumberFilter }
+      >
+        Filtrar
+      </button>
+      <div>
+        {
+          filterByNumericValues.map((item, index) => (
+            <p
+              key={ index }
+            >
+              {`${item.column} 
+              ${item.comparison} 
+              ${item.value}`}
+            </p>
+          ))
+        }
+      </div>
       <table>
         <thead>
           <tr>
@@ -48,7 +129,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {dataFilter.map((planet) => (
+          {planetName.map((planet) => (
             <tr key={ planet.name }>
               <td data-testid="planet-name">{ planet.name }</td>
               <td>{ planet.rotation_period }</td>
