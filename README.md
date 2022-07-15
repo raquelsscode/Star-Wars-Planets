@@ -1,4 +1,4 @@
-# Star-Wars-Planets :ringed_planet: 
+# Star Wars Planets :ringed_planet: 
 
 Projeto de filtro dos planetas de Star Wars através de uma API!
 
