@@ -4,7 +4,7 @@ Projeto de filtro dos planetas de Star Wars através de uma API!
 
 # Ferramentas Utilizadas :hammer_and_wrench:
 
-- React Hooks
+- React
 - HTML
 - CSS
 - Context API
