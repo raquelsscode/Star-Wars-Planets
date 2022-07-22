@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
+import '../TableCSS/Table.css';
 
 function Table() {
   const { data, planetName, setPlanetName, getPlanets } = useContext(PlanetsContext);
@@ -11,8 +12,15 @@ function Table() {
   });
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState();
   const [isDisabled, setIsDisabled] = useState(true);
+
+  const options = ['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water'];
+
+  const compare = dataFilter.filterByNumericValues.map((item) => item.column);
+  const filterOptions = options.filter((item) => !compare.includes(item));
+  console.log(planetName);
 
   useEffect(() => {
     getPlanets();
@@ -88,69 +96,86 @@ function Table() {
 
   const title = ['Name', 'Rotation Period', 'Orbital Period', 'Diameter',
     'Climate', 'Gravity', 'Terrain', 'Surface Water',
-    'Population', 'Films', 'Created', 'Edited', 'URL'];
+    'Population'];
 
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Procure um Planeta"
-        onChange={ handlePlanet }
-        data-testid="name-filter"
-      />
-      <select
-        onChange={ ({ target }) => setColumn(target.value) }
-        data-testid="column-filter"
-      >
-        <option>population</option>
-        <option>orbital_period</option>
-        <option>diameter</option>
-        <option>rotation_period</option>
-        <option>surface_water</option>
-      </select>
-      <select
-        onChange={ ({ target }) => setComparison(target.value) }
-        data-testid="comparison-filter"
-      >
-        <option>maior que</option>
-        <option>menor que</option>
-        <option>igual a</option>
-      </select>
-      <input
-        type="number"
-        placeholder="Digite um valor"
-        value={ value }
-        onChange={ ({ target }) => setValue(Number(target.value)) }
-        data-testid="value-filter"
-      />
-      <button
-        type="button"
-        data-testid="button-filter"
-        onClick={ handleNumberFilter }
-      >
-        Filtrar
-      </button>
-      <div>
-        {
-          <button
-            data-testid="button-remove-filters"
-            type="button"
-            disabled={ isDisabled }
-            onClick={ removeAllFilters }
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossOrigin="anonymous" />
+      <div className="Initialimage">
+        <img src="https://i.ibb.co/VjV0W9n/planets.png" alt="planets" border="0" />
+      </div>
+      <div className="inputs">
+        <div className="forms">
+          <input
+            type="text"
+            placeholder="Procure um Planeta"
+            onChange={ handlePlanet }
+            data-testid="name-filter"
+          />
+        </div>
+        <div className="forms">
+          <select
+            onChange={ ({ target }) => setColumn(target.value) }
+            data-testid="column-filter"
           >
-            Remover todos os filtros
-          </button>
-        }
+            {filterOptions.map((item, index) => (
+              <option
+                key={ index }
+              >
+                { item }
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="forms">
+          <select
+            onChange={ ({ target }) => setComparison(target.value) }
+            data-testid="comparison-filter"
+          >
+            <option>maior que</option>
+            <option>menor que</option>
+            <option>igual a</option>
+          </select>
+        </div>
+        <div className="forms">
+          <input
+            type="number"
+            placeholder="Digite um valor"
+            onChange={ ({ target }) => setValue(Number(target.value)) }
+            data-testid="value-filter"
+          />
+        </div>
+        <button
+          className="forms"
+          type="button"
+          data-testid="button-filter"
+          onClick={ handleNumberFilter }
+        >
+          Filtrar
+        </button>
+
+        <button
+          className="forms"
+          data-testid="button-remove-filters"
+          type="button"
+          disabled={ isDisabled }
+          onClick={ removeAllFilters }
+        >
+          Remover todos os filtros
+        </button>
+      </div>
+      <div>
 
         {
           filterByNumericValues.map((item, index) => (
-            <p
-              key={ index }
-              data-testid="filter"
-            >
-              {`${item.column} 
+            <div key={ index } className="filter">
+              <h3
+                data-testid="filter"
+              >
+                {`${item.column} 
               ${item.comparison} 
               ${item.value}`}
+              </h3>
 
               <button
                 type="button"
@@ -159,36 +184,34 @@ function Table() {
               >
                 Remover Filtro
               </button>
-            </p>
+            </div>
           ))
         }
       </div>
-      <table>
-        <thead>
-          <tr>
-            {title.map((infos, index) => (<th key={ index }>{infos}</th>))}
-          </tr>
-        </thead>
-        <tbody>
-          {planetName.map((planet) => (
-            <tr key={ planet.name }>
-              <td data-testid="planet-name">{ planet.name }</td>
-              <td>{ planet.rotation_period }</td>
-              <td>{ planet.orbital_period }</td>
-              <td>{ planet.diameter }</td>
-              <td>{ planet.climate }</td>
-              <td>{ planet.gravity }</td>
-              <td>{ planet.terrain }</td>
-              <td>{ planet.surface_water }</td>
-              <td>{ planet.population }</td>
-              <td>{ planet.films.map((element) => element) }</td>
-              <td>{ planet.created }</td>
-              <td>{ planet.edited }</td>
-              <td>{ planet.url }</td>
+      <div className="tabela table table-striped">
+        <table className="table-dark">
+          <thead>
+            <tr className="bg-warning">
+              {title.map((infos, index) => (<th key={ index }>{infos}</th>))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="comBordaSimples">
+            {planetName.map((planet) => (
+              <tr key={ planet.name }>
+                <td data-testid="planet-name">{ planet.name }</td>
+                <td>{ planet.rotation_period }</td>
+                <td>{ planet.orbital_period }</td>
+                <td>{ planet.diameter }</td>
+                <td>{ planet.climate }</td>
+                <td>{ planet.gravity }</td>
+                <td>{ planet.terrain }</td>
+                <td>{ planet.surface_water }</td>
+                <td>{ planet.population }</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
