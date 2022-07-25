@@ -20,7 +20,6 @@ function Table() {
 
   const compare = dataFilter.filterByNumericValues.map((item) => item.column);
   const filterOptions = options.filter((item) => !compare.includes(item));
-  console.log(planetName);
 
   useEffect(() => {
     getPlanets();
@@ -104,8 +103,8 @@ function Table() {
       <div className="Initialimage">
         <img src="https://i.ibb.co/VjV0W9n/planets.png" alt="planets" border="0" />
       </div>
-      <div className="inputs">
-        <div className="forms">
+      <div className="forms">
+        <div className="inputs">
           <input
             type="text"
             placeholder="Procure um Planeta"
@@ -113,7 +112,7 @@ function Table() {
             data-testid="name-filter"
           />
         </div>
-        <div className="forms">
+        <div className="inputs">
           <select
             onChange={ ({ target }) => setColumn(target.value) }
             data-testid="column-filter"
@@ -127,7 +126,7 @@ function Table() {
             ))}
           </select>
         </div>
-        <div className="forms">
+        <div className="inputs">
           <select
             onChange={ ({ target }) => setComparison(target.value) }
             data-testid="comparison-filter"
@@ -137,7 +136,7 @@ function Table() {
             <option>igual a</option>
           </select>
         </div>
-        <div className="forms">
+        <div className="inputs">
           <input
             type="number"
             placeholder="Digite um valor"
@@ -146,7 +145,7 @@ function Table() {
           />
         </div>
         <button
-          className="forms"
+          className="inputs"
           type="button"
           data-testid="button-filter"
           onClick={ handleNumberFilter }
@@ -155,7 +154,7 @@ function Table() {
         </button>
 
         <button
-          className="forms"
+          className="inputs"
           data-testid="button-remove-filters"
           type="button"
           disabled={ isDisabled }
